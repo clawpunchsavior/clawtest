@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CLAW CHALLENGE - AI Quiz Game</title>
+    <meta name="description" content="Compete against the most arrogant AI in the ocean. Answer questions on current events and AI. Prove your worth.">
+    <link rel="icon" type="image/png" href="assets/clawtest2.gif">
+    <meta property="og:image" content="assets/images/claw-banner.png">
+    <meta property="og:title" content="Claw Challenge - Think You're Smarter?">
+    <meta property="og:description" content="Compete against the most arrogant AI in the ocean. Prove your worth.">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="assets/images/claw-banner.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>html { scroll-behavior: smooth; }</style>
+</head>
+<body>
+
+    <!-- Scroll Progress Bar -->
+    <div id="scroll-progress-bar"></div>
+
+    <!-- Floating CTA -->
+    <button id="floating-cta" class="floating-cta" onclick="smoothScrollTo('difficulty-section')">🦞 CHALLENGE ME</button>
+
+    <!-- Scanline Overlay -->
+    <div class="scanline-overlay"></div>
+
+    <!-- Particle Canvas Background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- ==================== PLAYER NAME MODAL ==================== -->
+    <div class="modal" id="nameModal" style="display:none;">
+        <div class="modal__content">
+            <img src="assets/clawtest2.gif" alt="The Claw" class="modal__claw">
+            <h2>THE CLAW WANTS TO KNOW...</h2>
+            <p>What shall you be called, challenger?</p>
+            <input type="text" id="playerNameInput" placeholder="Enter your name..." maxlength="20" autocomplete="off">
+            <button onclick="savePlayerName()">ENTER THE ARENA</button>
+        </div>
+    </div>
+
+    <!-- ==================== BADGE NOTIFICATION ==================== -->
+    <div id="badge-notification" class="badge-notification" style="display:none;">
+        <div class="badge-notif-content">
+            <span class="badge-notif-icon" id="badge-notif-icon">🏆</span>
+            <div class="badge-notif-text">
+                <span class="badge-notif-title">NEW BADGE UNLOCKED!</span>
+                <span class="badge-notif-name" id="badge-notif-name">Achievement</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== SUPER HARD UNLOCK OVERLAY ==================== -->
+    <div id="unlock-overlay" class="unlock-overlay" style="display:none;">
+        <div class="unlock-content">
+            <div class="unlock-padlock" id="unlock-padlock">🔒</div>
+            <div class="unlock-lightning"></div>
+            <div class="unlock-text">
+                <h2>SUPER HARD UNLOCKED</h2>
+                <p id="unlock-claw-speech">How... IMPOSSIBLE. Fine. You want the real challenge? You'll regret this.</p>
+            </div>
+            <div class="unlock-badge">CLAW APPROVED 💀</div>
+            <button class="modal-btn" onclick="closeUnlockOverlay()">ACCEPT YOUR FATE</button>
+        </div>
+    </div>
+
+    <!-- ==================== SPEED BONUS POPUP ==================== -->
+    <div id="speed-bonus-popup" class="speed-bonus-popup" style="display:none;">
+        <span id="speed-bonus-text">+150 SPEED BONUS!</span>
+    </div>
+
+    <!-- ==================== HERO SECTION ==================== -->
+    <section class="hero" id="hero-section">
+        <div class="hero__background">
+            <div class="hero__overlay"></div>
+            <div class="hero__floating-symbols" aria-hidden="true">
+                <span class="fsym">&#60;/&#62;</span>
+                <span class="fsym">?</span>
+                <span class="fsym">#</span>
+                <span class="fsym">{}</span>
+                <span class="fsym">&#60;/&#62;</span>
+                <span class="fsym">?</span>
+                <span class="fsym">#</span>
+                <span class="fsym">{}</span>
+            </div>
+        </div>
+        <div class="hero__split">
+            <!-- LEFT: Text -->
+            <div class="hero__left">
+                <h1 class="hero-title">CLAW CHALLENGE</h1>
+                <p class="hero__subtitle">Think you're smarter than the Claw?</p>
+                <p class="hero__description">Compete against the most arrogant AI in the ocean. Answer questions on current events and AI. Prove your worth.</p>
+                <!-- Daily Challenge Banner -->
+                <div class="daily-banner" id="daily-banner" style="display:none;">
+                    <span class="daily-icon">📅</span>
+                    <span class="daily-text">DAILY CHALLENGE AVAILABLE</span>
+                    <span class="daily-timer" id="daily-reset-timer">Resets in 00:00:00</span>
+                
+                <!-- CA Token Address -->
+                <div class="ca-section" id="ca-section">
+                    <div class="ca-label">
+                        <span class="ca-pulse"></span>
+                        <span class="ca-label-text">CONTRACT ADDRESS</span>
+                        <span class="ca-chain">SOLANA</span>
+                    </div>
+                    <div class="ca-box">
+                        <code class="ca-code" id="ca-code">ARjSwRwmPMbksQDLmnwb5jxEmQXbcA6MpoHc5Ckxpump</code>
+                        <button class="ca-copy-btn" id="ca-copy-btn" onclick="copyCA()">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            <span id="copy-text">COPY</span>
+                        </button>
+                    </div>
+                </div>
+
+</div>
+                <div class="hero-buttons">
+                    <button class="btn-challenge" id="challenge-btn" onclick="smoothScrollTo('difficulty-section')">CHALLENGE ME</button>
+                    <button class="btn-challenge daily-btn" id="daily-challenge-btn" onclick="startDailyChallenge()" style="display:none;">DAILY CHALLENGE</button>
+                </div>
+            </div>
+            <!-- RIGHT: GIF -->
+            <div class="hero__right">
+                <div class="hero__watermark" aria-hidden="true">CHALLENGE ME</div>
+                <div class="hero__gif-wrap">
+                    <img src="assets/clawtest2.gif" alt="The Claw" class="claw-character hero__character">
+                    <div class="hero__glow-floor"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Sound Toggle -->
+        <button class="sound-toggle" id="sound-toggle" onclick="toggleSound()" title="Toggle Sound">🔊</button>
+    </section>
+
+    <!-- ==================== HOW IT WORKS ==================== -->
+    <section class="how-it-works reveal" id="how-it-works">
+        <div class="section-header">
+            <h2 class="section-title">HOW THE CLAW WORKS</h2>
+            <p class="section-subtitle">Simple rules. Brutal execution.</p>
+        </div>
+        <div class="hiw-steps">
+            <div class="hiw-step">
+                <div class="hiw-step-num">01</div>
+                <div class="hiw-icon">🎯</div>
+                <h3 class="hiw-title">PICK YOUR DIFFICULTY</h3>
+                <p class="hiw-desc">Choose from Easy to Super Hard. Each level tests a different depth of knowledge.</p>
+            </div>
+            <div class="hiw-connector">→</div>
+            <div class="hiw-step">
+                <div class="hiw-step-num">02</div>
+                <div class="hiw-icon">⚡</div>
+                <h3 class="hiw-title">ANSWER FAST</h3>
+                <p class="hiw-desc">Every question has a timer. The Claw doesn't wait. Think fast or lose points.</p>
+            </div>
+            <div class="hiw-connector">→</div>
+            <div class="hiw-step">
+                <div class="hiw-step-num">03</div>
+                <div class="hiw-icon">🏆</div>
+                <h3 class="hiw-title">CLAIM YOUR RANK</h3>
+                <p class="hiw-desc">Score high enough to enter the Hall of Fame. Prove you're smarter than a lobster.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== CLAW TAUNTS ==================== -->
+    <section class="taunts-section reveal" id="taunts-section">
+        <div class="taunts-bg-quote">&ldquo;</div>
+        <div class="taunts-inner">
+            <div class="taunts-quotes" id="taunts-quotes">
+                <div class="taunt active"><span class="taunt-icon">🦞</span><q>Most humans quit by question 3. Are you most humans?</q></div>
+                <div class="taunt"><span class="taunt-icon">🦞</span><q>I've seen smarter things washed up on the beach.</q></div>
+                <div class="taunt"><span class="taunt-icon">🦞</span><q>Your confidence is adorable. It won't last.</q></div>
+                <div class="taunt"><span class="taunt-icon">🦞</span><q>The last person who tried Hard mode cried. Just saying.</q></div>
+                <div class="taunt"><span class="taunt-icon">🦞</span><q>I'm literally a lobster and I'm still smarter than you.</q></div>
+            </div>
+            <div class="taunts-dots" id="taunts-dots">
+                <span class="taunt-dot active" data-index="0"></span>
+                <span class="taunt-dot" data-index="1"></span>
+                <span class="taunt-dot" data-index="2"></span>
+                <span class="taunt-dot" data-index="3"></span>
+                <span class="taunt-dot" data-index="4"></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== WARM UP YOUR BRAIN ==================== -->
+    <section class="warmup-section reveal" id="warmup-section">
+        <div class="section-header">
+            <h2 class="section-title">WARM UP YOUR BRAIN</h2>
+            <p class="section-subtitle">The Claw wants to know what it's dealing with.</p>
+        </div>
+        <div class="warmup-cards">
+
+            <!-- REFLEX TEST -->
+            <div class="warmup-card" id="reflex-card">
+                <div class="warmup-card-header">
+                    <span class="warmup-card-icon">⚡</span>
+                    <h3 class="warmup-card-title">CLAW REFLEX</h3>
+                </div>
+                <p class="warmup-card-desc">Click the claw the instant it appears. The Claw judges your reaction speed.</p>
+                <div class="reflex-arena" id="reflex-arena">
+                    <div class="reflex-state" id="reflex-state">
+                        <p class="reflex-status" id="reflex-status">Ready to test your reflexes?</p>
+                        <button class="warmup-btn" id="reflex-start-btn" onclick="reflexStart()">START</button>
+                    </div>
+                    <div class="reflex-target" id="reflex-target" style="display:none;" onclick="reflexClick()">🦞</div>
+                </div>
+                <div class="warmup-result" id="reflex-result" style="display:none;">
+                    <p class="warmup-result-time" id="reflex-time"></p>
+                    <p class="warmup-result-rating" id="reflex-rating"></p>
+                    <button class="warmup-btn warmup-btn--secondary" onclick="reflexReset()">PLAY AGAIN</button>
+                </div>
+            </div>
+
+            <!-- MEMORY TEST -->
+            <div class="warmup-card" id="memory-card">
+                <div class="warmup-card-header">
+                    <span class="warmup-card-icon">🧠</span>
+                    <h3 class="warmup-card-title">CLAW MEMORY</h3>
+                </div>
+                <p class="warmup-card-desc">Memorize the sequence. The Claw has a perfect memory. Do you?</p>
+                <div class="memory-arena" id="memory-arena">
+                    <div class="memory-state" id="memory-state">
+                        <p class="memory-status" id="memory-status">Ready to test your memory?</p>
+                        <button class="warmup-btn" id="memory-start-btn" onclick="memoryStart()">START</button>
+                    </div>
+                    <div class="memory-grid" id="memory-grid" style="display:none;">
+                        <div class="memory-tile" id="mt-0" onclick="memoryTileClick(0)"></div>
+                        <div class="memory-tile" id="mt-1" onclick="memoryTileClick(1)"></div>
+                        <div class="memory-tile" id="mt-2" onclick="memoryTileClick(2)"></div>
+                        <div class="memory-tile" id="mt-3" onclick="memoryTileClick(3)"></div>
+                        <div class="memory-tile" id="mt-4" onclick="memoryTileClick(4)"></div>
+                        <div class="memory-tile" id="mt-5" onclick="memoryTileClick(5)"></div>
+                        <div class="memory-tile" id="mt-6" onclick="memoryTileClick(6)"></div>
+                        <div class="memory-tile" id="mt-7" onclick="memoryTileClick(7)"></div>
+                        <div class="memory-tile" id="mt-8" onclick="memoryTileClick(8)"></div>
+                    </div>
+                    <p class="memory-round-label" id="memory-round-label" style="display:none;"></p>
+                </div>
+                <div class="warmup-result" id="memory-result" style="display:none;">
+                    <p class="warmup-result-time" id="memory-score"></p>
+                    <p class="warmup-result-rating" id="memory-rating"></p>
+                    <button class="warmup-btn warmup-btn--secondary" onclick="memoryReset()">PLAY AGAIN</button>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ==================== DIFFICULTY SELECTION ==================== -->
+    <section id="difficulty-section" class="difficulty-section reveal">
+        <div class="section-header">
+            <h2 class="section-title">SELECT YOUR FATE</h2>
+            <p class="section-subtitle">Choose wisely. The Claw shows no mercy.</p>
+        </div>
+        <div class="difficulty-cards">
+            <!-- EASY -->
+            <div class="difficulty-card easy-card" onclick="initGame('easy')">
+                <div class="card-icon">🦀</div>
+                <h3 class="card-title">EASY</h3>
+                <p class="card-subtitle">Brave Beginner</p>
+                <p class="card-description">Basic AI and current events. The Claw is still warming up.</p>
+                <div class="card-meta">
+                    <span class="card-points">100 pts per correct answer</span>
+                    <span class="card-time">⏱ 30 seconds per question</span>
+                </div>
+                <button class="card-button easy-btn">I'll Start Here</button>
+            </div>
+
+            <!-- MEDIUM -->
+            <div class="difficulty-card medium-card featured" onclick="initGame('medium')">
+                <div class="card-badge">MOST POPULAR</div>
+                <div class="card-icon">🦞</div>
+                <h3 class="card-title">MEDIUM</h3>
+                <p class="card-subtitle">Worthy Challenger</p>
+                <p class="card-description">Intermediate questions. The Claw starts taking you seriously.</p>
+                <div class="card-meta">
+                    <span class="card-points">250 pts per correct answer</span>
+                    <span class="card-time">⏱ 20 seconds per question</span>
+                </div>
+                <button class="card-button medium-btn">Accept Challenge</button>
+            </div>
+
+            <!-- HARD -->
+            <div class="difficulty-card hard-card" onclick="initGame('hard')">
+                <div class="card-badge gold-badge">FOR THE BRAVE</div>
+                <div class="card-icon">👑</div>
+                <h3 class="card-title">HARD</h3>
+                <p class="card-subtitle">Lobster Slayer</p>
+                <p class="card-description">Advanced AI, coding, deep current events. Very few survive.</p>
+                <div class="card-meta">
+                    <span class="card-points">500 pts per correct answer</span>
+                    <span class="card-time">⏱ 15 seconds per question</span>
+                </div>
+                <button class="card-button hard-btn">I Fear Nothing</button>
+            </div>
+
+            <!-- SUPER HARD (locked by default) -->
+            <div class="difficulty-card superhard-card locked" id="superhard-card" onclick="handleSuperHardClick()">
+                <div class="card-badge skull-badge" id="superhard-badge">LOCKED 🔒</div>
+                <div class="card-icon" id="superhard-icon">🔒</div>
+                <h3 class="card-title">SUPER HARD</h3>
+                <p class="card-subtitle" id="superhard-subtitle">Claw's Personal Challenge</p>
+                <p class="card-description" id="superhard-desc">Locked. Score 8/10 on Hard to prove you deserve this.</p>
+                <div class="card-meta">
+                    <span class="card-points" id="superhard-points">1000 pts per correct answer</span>
+                    <span class="card-time" id="superhard-time">⏱ 10 seconds per question</span>
+                </div>
+                <div class="unlock-progress" id="unlock-progress">
+                    <div class="unlock-progress-bar"><div class="unlock-progress-fill" id="unlock-progress-fill"></div></div>
+                    <span class="unlock-progress-text" id="unlock-progress-text">0/8 correct needed</span>
+                </div>
+                <button class="card-button superhard-btn" id="superhard-btn">LOCKED</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== QUIZ ARENA ==================== -->
+    <section id="quiz-section" class="quiz-section">
+        <!-- TOP BAR -->
+        <div class="quiz-top-bar">
+            <div class="score-display">
+                <span class="score-label">SCORE</span>
+                <span class="score-value" id="score-display">0</span>
+            </div>
+            <div class="streak-display" id="streak-display" style="display:none;">
+                <span class="streak-fire" id="streak-fire">🔥</span>
+                <span class="streak-count" id="streak-count">x0</span>
+                <span class="multiplier-badge" id="multiplier-badge">1x</span>
+            </div>
+            <div class="quiz-logo">CLAW CHALLENGE</div>
+            <div class="question-counter">
+                <span id="question-counter">Question 1 of 10</span>
+            </div>
+        </div>
+
+        <div class="quiz-arena">
+            <!-- CLAW REACTION PANEL -->
+            <div class="claw-reaction-panel">
+                <div class="claw-reaction__character">
+                    <img src="assets/clawtest2.gif" alt="The Claw" id="clawCharacter" class="claw-character claw-character--quiz">
+                </div>
+                <div class="speech-bubble" id="clawSpeech">
+                    <p id="claw-speech">The Claw has never lost. But please, try.</p>
+                </div>
+            </div>
+
+            <!-- QUESTION DISPLAY -->
+            <div class="question-container" id="question-container">
+                <div class="question-badges">
+                    <span class="badge question-number-badge" id="question-number-badge">Q1</span>
+                    <span class="badge difficulty-badge" id="difficulty-badge">EASY</span>
+                    <span class="badge category-badge" id="category-badge">AI Basics</span>
+                </div>
+                <p class="question-text" id="question-text">Loading question...</p>
+            </div>
+
+            <!-- TIMER BAR -->
+            <div class="timer-container">
+                <div class="timer-bar" id="timer-bar">
+                    <div class="timer-fill" id="timer-fill"></div>
+                </div>
+                <span class="timer-text" id="timer-text">30s</span>
+            </div>
+
+            <!-- ANSWER OPTIONS -->
+            <div class="answers-grid" id="answers-grid">
+                <button class="answer-option" id="option-0" onclick="handleAnswerSelect(0)">
+                    <span class="option-letter">A</span>
+                    <span class="option-text" id="option-text-0">Option A</span>
+                </button>
+                <button class="answer-option" id="option-1" onclick="handleAnswerSelect(1)">
+                    <span class="option-letter">B</span>
+                    <span class="option-text" id="option-text-1">Option B</span>
+                </button>
+                <button class="answer-option" id="option-2" onclick="handleAnswerSelect(2)">
+                    <span class="option-letter">C</span>
+                    <span class="option-text" id="option-text-2">Option C</span>
+                </button>
+                <button class="answer-option" id="option-3" onclick="handleAnswerSelect(3)">
+                    <span class="option-letter">D</span>
+                    <span class="option-text" id="option-text-3">Option D</span>
+                </button>
+            </div>
+
+            <!-- LIFELINES -->
+            <div class="lifelines-container" id="lifelines-container">
+                <button class="lifeline-btn" id="lifeline-5050" onclick="useFiftyFifty()" title="Remove 2 wrong answers">
+                    <span class="lifeline-icon">✂️</span>
+                    <span class="lifeline-label">50/50</span>
+                </button>
+                <button class="lifeline-btn" id="lifeline-skip" onclick="useSkip()" title="Skip this question">
+                    <span class="lifeline-icon">⏭️</span>
+                    <span class="lifeline-label">SKIP</span>
+                </button>
+                <button class="lifeline-btn" id="lifeline-hint" onclick="useHint()" title="Get a sarcastic hint">
+                    <span class="lifeline-icon">💡</span>
+                    <span class="lifeline-label">HINT</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== RESULTS SECTION ==================== -->
+    <section id="results-section" class="results-section">
+        <div class="results-container">
+            <!-- CLAW REACTION -->
+            <div class="results__claw">
+                <img src="assets/clawtest2.gif" alt="The Claw" id="clawResultCharacter" class="claw-character claw-character--results">
+                <div class="results__verdict" id="clawVerdict">
+                    <p id="results-claw-speech">...</p>
+                </div>
+            </div>
+
+            <!-- SCORE DISPLAY -->
+            <div class="results-score-display">
+                <h2 class="results-title" id="results-title">YOUR RESULTS</h2>
+                <div class="results-rating" id="results-rating">SURVIVED</div>
+                <div class="score-circle">
+                    <span class="score-big" id="results-correct">0</span>
+                    <span class="score-of">out of</span>
+                    <span class="score-total">10</span>
+                </div>
+                <div class="results-stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-label">POINTS</span>
+                        <span class="stat-value gold" id="results-points">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">ACCURACY</span>
+                        <span class="stat-value cyan" id="results-accuracy">0%</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">AVG TIME</span>
+                        <span class="stat-value" id="results-avg-time">0s</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">BEST STREAK</span>
+                        <span class="stat-value fire" id="results-best-streak">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">SPEED BONUS</span>
+                        <span class="stat-value cyan" id="results-speed-bonus">+0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">TIME BONUS</span>
+                        <span class="stat-value cyan" id="results-time-bonus">+0</span>
+                    </div>
+                </div>
+
+                <!-- Badges Earned -->
+                <div class="results-badges" id="results-badges" style="display:none;">
+                    <h3 class="results-badges-title">BADGES EARNED</h3>
+                    <div class="results-badges-list" id="results-badges-list"></div>
+                </div>
+            </div>
+
+            <!-- QUESTION REVIEW -->
+            <div class="question-review" id="question-review">
+                <h3 class="review-title">QUESTION BREAKDOWN</h3>
+                <div class="review-list" id="review-list"></div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="results-actions">
+                <button class="action-btn primary-action" onclick="restartSameDifficulty()">CHALLENGE AGAIN</button>
+                <button class="action-btn secondary-action" onclick="changeDifficulty()">CHANGE DIFFICULTY</button>
+                <button class="action-btn share-action" onclick="shareOnTwitter()">SHARE ON X (TWITTER)</button>
+                <button class="action-btn copy-action" onclick="copyResultsToClipboard()">COPY RESULTS</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== LEADERBOARD SECTION ==================== -->
+    <section id="leaderboard-section" class="leaderboard-section reveal">
+        <div class="section-header">
+            <h2 class="section-title">HALL OF FAME</h2>
+            <p class="section-subtitle">The Claw remembers all who dared.</p>
+        </div>
+
+        <!-- Personal Best -->
+        <div class="personal-best" id="personal-best">
+            <h3 class="pb-title">YOUR BEST</h3>
+            <div class="pb-grid">
+                <div class="pb-card"><span class="pb-diff">EASY</span><span class="pb-score" id="pb-easy">--</span></div>
+                <div class="pb-card"><span class="pb-diff">MEDIUM</span><span class="pb-score" id="pb-medium">--</span></div>
+                <div class="pb-card"><span class="pb-diff">HARD</span><span class="pb-score" id="pb-hard">--</span></div>
+                <div class="pb-card"><span class="pb-diff">SUPER</span><span class="pb-score" id="pb-superhard">--</span></div>
+            </div>
+        </div>
+
+        <div class="leaderboard-controls">
+            <div class="leaderboard-tabs">
+                <button class="tab-btn active" onclick="filterLeaderboard('all')" data-tab="all">ALL</button>
+                <button class="tab-btn" onclick="filterLeaderboard('easy')" data-tab="easy">EASY</button>
+                <button class="tab-btn" onclick="filterLeaderboard('medium')" data-tab="medium">MEDIUM</button>
+                <button class="tab-btn" onclick="filterLeaderboard('hard')" data-tab="hard">HARD</button>
+                <button class="tab-btn" onclick="filterLeaderboard('superhard')" data-tab="superhard">SUPER HARD</button>
+                <button class="tab-btn" onclick="filterLeaderboard('daily')" data-tab="daily">DAILY</button>
+            </div>
+            <div class="leaderboard-sort">
+                <label class="sort-label">Sort:</label>
+                <select class="sort-select" id="leaderboard-sort" onchange="sortLeaderboard(this.value)">
+                    <option value="score">Score</option>
+                    <option value="accuracy">Accuracy</option>
+                    <option value="speed">Speed</option>
+                    <option value="recent">Recent</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="leaderboard-table-wrapper">
+            <table class="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>NAME</th>
+                        <th>SCORE</th>
+                        <th>DIFF</th>
+                        <th>ACC%</th>
+                        <th>AVG T</th>
+                        <th>DATE</th>
+                        <th>BADGES</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <tr class="empty-row">
+                        <td colspan="8">No challengers yet. Be the first.<span class="blink-cursor">_</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="site-footer">
+        <div class="footer-content">
+            <p>CLAW CHALLENGE &copy; 2025 &mdash; Powered by Crustacean Intelligence</p>
+            <a class="footer-x-link" href="https://x.com/TheClawTest" target="_blank" rel="noopener noreferrer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622 5.911-5.622Zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                @TheClawTest
+            </a>
+            <button class="change-name-link" onclick="showNameModal(true)">Change Name</button>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
